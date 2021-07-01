@@ -2,16 +2,17 @@ package datastructures;
 
 public class HashTable<K, V> {
 
-    private static final double POROG = 0.9f;
+    private static final double FILL_FACTOR = 0.9;
 
     private Node<K, V>[] table;
     private int M;
     private int elementsNum;
 
+
     @SuppressWarnings("unchecked")
     public HashTable() {
-        table = (Node<K, V>[]) new Node[17];
-        M = 17;
+        this.M = 17;
+        table = (Node<K, V>[]) new Node[M];
     }
 
     private static class Node<K, V> {
@@ -27,41 +28,30 @@ public class HashTable<K, V> {
     }
 
     public boolean contains(K key) {
-        int i = computeIndex(key);
-        return table[i] != null;
+        return get(key) != null;
     }
 
     public V get(K key) {
-        int i = computeIndex(key);
-        if (table[i] == null) {
-            return null;
-        }
-
-        Node<K, V> node = table[i];
-        while (node != null) {
-            if (key.equals(node.key)) {
-                return node.value;
-            }
-            node = node.next;
-        }
-
-        return null;
+        Node<K, V> n = getNode(key);
+        return n == null ? null : n.value;
     }
 
     public void put(K key, V val) {
-        if ((double)elementsNum / M > POROG) {
+        if ((double) elementsNum / M > FILL_FACTOR) {
             table = grow();
         }
 
         int i = computeIndex(key);
-        while (i < 0) {
-            i += M;
-        }
 
         if (table[i] == null) {
             table[i] = new Node<>(key, val, null);
         } else {
-            table[i] = new Node<>(key, val, table[i]);
+            Node<K, V> node = getNode(key);
+            if (node == null) {
+                table[i] = new Node<>(key, val, table[i]);
+            } else {
+                node.value = val;
+            }
         }
         elementsNum++;
     }
@@ -92,6 +82,8 @@ public class HashTable<K, V> {
                 node = node.next;
             }
         }
+
+        elementsNum--;
     }
 
     private int computeIndex(K key) {
@@ -100,6 +92,23 @@ public class HashTable<K, V> {
             return i + M;
         }
         return i;
+    }
+
+    private Node<K, V> getNode(K key) {
+        int i = computeIndex(key);
+        if (table[i] == null) {
+            return null;
+        }
+
+        Node<K, V> node = table[i];
+        while (node != null) {
+            if (key.equals(node.key)) {
+                return node;
+            }
+            node = node.next;
+        }
+
+        return null;
     }
 
     @SuppressWarnings("unchecked")
@@ -114,11 +123,11 @@ public class HashTable<K, V> {
                 K key = currentNode.key;
                 V val = currentNode.value;
 
-                int j = key.hashCode() % M;
-                if (newTable[j] == null) {
-                    newTable[j] = new Node<>(key, val, null);
+                int i = computeIndex(key);
+                if (newTable[i] == null) {
+                    newTable[i] = new Node<>(key, val, null);
                 } else {
-                    newTable[j] = new Node<>(key, val, newTable[j]);
+                    newTable[i] = new Node<>(key, val, newTable[i]);
                 }
                 currentNode = currentNode.next;
             }
