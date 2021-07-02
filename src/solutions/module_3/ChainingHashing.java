@@ -50,7 +50,7 @@ public class ChainingHashing {
 class HashTable<K, V> {
 
     Node<K, V>[] table;
-    private int M;
+    private final int M;
 
     @SuppressWarnings("unchecked")
     public HashTable(int M) {
