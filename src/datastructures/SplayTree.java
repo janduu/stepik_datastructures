@@ -100,34 +100,39 @@ public class SplayTree {
         }
     }
 
-    public long getSum(int l, int r) {
-        if (l == r) {
-            return l;
-        } else if (root == null || l > r) {
+    public long computeSum(int l, int r) {
+        if (root == null || l > r) {
             return 0;
         }
 
-        long sum;
-
-        if (contains(l - 1) && root.getRight() != null) {
-            sum = root.getRight().getSum();
-        } else {
-            sum = root.getSum();
-            if (root.getLeft() != null) {
-                sum -= root.getLeft().getSum();
+        if (l == r) {
+            if (contains(l)) {
+                return l;
+            } else {
+                return 0;
             }
         }
-//        System.out.println(sum);
 
-        if (contains(r)) {
-            if (root.getRight() != null) {
-                sum -= root.getRight().getSum();
-            }
-        } else if (sum != root.getSum()) {
-            sum -= root.getSum();
-            if (root.getLeft() != null) {
-                sum += root.getLeft().getSum();
-            }
+        long sum = 0;
+
+        contains(l - 1);
+
+        if (root.getRight() != null) {
+            sum = root.getRight().getSum();
+        }
+
+        if (root.getVal() >= l) {
+            sum += root.getVal();
+        }
+
+        contains(r);
+
+        if (root.getRight() != null) {
+            sum -= root.getRight().getSum();
+        }
+
+        if (root.getVal() > r) {
+            sum -= root.getVal();
         }
 
         return sum;
@@ -300,7 +305,7 @@ public class SplayTree {
                 Runtime.getRuntime().exec("clear");
             } else if (op == 5) {
                 System.out.println("Enter l and r");
-                System.out.println(tree.getSum(sc.nextInt(), sc.nextInt()));
+                System.out.println(tree.computeSum(sc.nextInt(), sc.nextInt()));
             } else if (op == 0) {
                 System.out.println("Bye");
                 break;

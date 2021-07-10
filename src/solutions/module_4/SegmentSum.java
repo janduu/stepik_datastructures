@@ -36,7 +36,7 @@ public class SegmentSum {
                 int l = f(Integer.parseInt(strings[1]), sum);
                 int r = f(Integer.parseInt(strings[2]), sum);
 //                System.out.println("l " + l + " r " + r);
-                sum = tree.getSum(l, r);
+                sum = tree.computeSum(l, r);
                 System.out.println(sum);
             }
         }
